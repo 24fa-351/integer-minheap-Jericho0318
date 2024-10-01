@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "heap.h"
+#include "some_heap.h"
 
 /*
 Assignment 5: integer minheap
@@ -14,22 +14,27 @@ unsigned long long rand_between(unsigned long long min,
     return min + (rand() % range);
 }
 
-void test_heap(void) {
+void test_heap(FILE* outputFile) {
     heap_t *heap = heap_create(200);
     for (heap_key_t ix = 0; ix < 20; ix++) {
         heap_key_t key = rand_between(0, 1000);
         heap_insert(heap, key, (heap_value_t)key);
-        heap_print(heap);
+        heap_print(heap, outputFile);
     }
     for (int ix = 0; ix < 10; ix++) {
         heap_key_t key = (heap_key_t)heap_remove_min(heap);
-        printf("Removed %llu\n", key);
-        heap_print(heap);
+        fprintf(outputFile, "Removed %llu\n", key);
+        heap_print(heap, outputFile);
     }
+    heap_free(heap);
     exit(0);
 }
 int main(int argc, char *argv[]) {
     srand(time(NULL));
-
-    test_heap();
+    FILE*  outputFile = fopen("heap_output.txt", "w");
+    if (outputFile == NULL) {
+        printf("ERROR!! Unable to open file.\n");
+        return 0;
+    }
+    test_heap(outputFile);
 }
